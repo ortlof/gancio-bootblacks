@@ -1,7 +1,7 @@
 <template>
 <article class='h-event' itemscope itemtype="https://schema.org/Event">
 
-  
+
   <nuxt-link :to='`/event/${event.slug || event.id}`' itemprop="url">
     <MyPicture v-if='!hide_thumbs' :event='event' thumb :lazy='lazy' />
     <v-icon class='float-right mr-1' v-if='event.parentId' color='success' v-text='mdiRepeat' />
@@ -9,6 +9,16 @@
   </nuxt-link>
 
   <v-img contain v-if='event?.ap_user?.image' :src='event?.ap_user?.image' max-height=30  max-width=30 style="position: absolute; top: 5px; right: 5px;" />
+
+  <div v-if="isPast" style="
+  position: absolute;
+  background: #6b6b6b;
+  box-shadow: 0 0 0 999px #6b6b6b;
+  clip-path: inset(0 -100%);
+  inset: 0 0 auto auto;
+  transform-origin: 0 0;
+  transform: translate(29.3%) rotate(45deg);
+">Past event</div>
 
   <v-card-text class='body pt-0 pb-0'>
 
@@ -25,7 +35,6 @@
       <span itemprop='name'>{{ event.place.name }}</span>
     </nuxt-link>
     <div class='d-none' itemprop='address'>{{ event.place.address }}</div>
-
   </v-card-text>
 
   <v-card-actions class='flex-wrap'>
@@ -51,6 +60,16 @@ export default {
     event: { type: Object, default: () => ({}) },
     lazy: Boolean
   },
-  computed: mapGetters(['hide_thumbs'])
+  computed: {
+    ...mapGetters(['hide_thumbs']),
+    isPast() {
+      const now = new Date();
+      if (this.event.end_datetime) {
+        return new Date(this.event.end_datetime*1000) < now;
+      } else {
+        return new Date(this.event.start_datetime*1000) < now;
+      }
+    }
+  }
 }
 </script>
