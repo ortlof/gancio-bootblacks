@@ -43,6 +43,10 @@ li {
   margin-right: 20px !important;
 }
 
+.theme--dark.v-sheet{
+  color:#000;
+}
+
 #home {
   max-width: 1400px;
   /* padding: 0px; */

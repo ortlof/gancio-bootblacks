@@ -1,0 +1,43 @@
+{
+  "baseurl": "http://192.168.2.105:13120",
+  "hostname": "192.168.2.105",
+  "server": {
+    "host": "0.0.0.0",
+    "port": 13120
+  },
+  "log_level": "debug",
+  "log_path": "I:\\Ortolodf\\gancio-bootblacks\\logs",
+  "db": {
+    "dialect": "sqlite",
+    "storage": "I:\\Ortolodf\\gancio-bootblacks\\gancio.sqlite",
+    "host": "localhost",
+    "database": "gancio",
+    "logging": false,
+    "dialectOptions": {
+      "autoJsonMap": true
+    },
+    "retry": {
+      "match": [
+        null,
+        null,
+        null,
+        {},
+        {}
+      ],
+      "max": 15
+    }
+  },
+  "user_locale": "I:\\Ortolodf\\gancio-bootblacks\\user_locale",
+  "upload_path": "I:\\Ortolodf\\gancio-bootblacks\\uploads",
+  "proxy": {
+    "protocol": "",
+    "hostname": "",
+    "host": "",
+    "port": "",
+    "auth": {
+      "username": "",
+      "password": ""
+    },
+    "headers": {}
+  }
+}

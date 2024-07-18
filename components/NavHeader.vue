@@ -1,7 +1,7 @@
 <template>
   <div class='d-flex pa-4'>
     <v-btn icon large nuxt to='/'>
-      <img src='/logo.png' height='40' />
+      <img src='/logo.png' height='80' />
     </v-btn>
 
     <v-spacer/>
