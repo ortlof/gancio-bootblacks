@@ -79,6 +79,8 @@ const exportController = {
         return exportController.feed(req, res, events.slice(0, 20))
       case 'ics':
         return exportController.ics(req, res, events)
+      case 'icsuk':
+          return exportController.icsuk(req, res, events)
       case 'json':
         return res.json(events)
     }
@@ -135,6 +137,55 @@ const exportController = {
 
       if (e.end_datetime) {
         const tmpEnd = DateTime.fromSeconds(e.end_datetime, { zone: 'UTC' })
+        const end = [ tmpEnd.year, tmpEnd.month, tmpEnd.day, tmpEnd.hour, tmpEnd.minute ]
+        ret.end = end
+      }
+
+      return ret
+    })
+    res.type('text/calendar; charset=UTF-8')
+    ics.createEvents(eventsMap, (err, value) => {
+      if (err) {
+        return res.status(401).send(err)
+      }
+      return res.send(value)
+    })
+  },
+
+  /**
+   * send an ics of specified events (optionally with reminders)
+   * @param {*} events array of events from sequelize
+   * @param {*} alarms https://github.com/adamgibbons/ics#attributes (alarms)
+   */
+  icsuk (_req, res, events, alarms = []) {
+    const settings = res.locals.settings
+    const eventsMap = events.map(e => {
+
+      const tmpStart = DateTime.fromSeconds(e.start_datetime, { zone: "UTC-1"})
+      const start = [ tmpStart.year, tmpStart.month, tmpStart.day, tmpStart.hour, tmpStart.minute ]
+
+      const location = e.place.name !== 'online' ? `${e.place.name} - ${e.place.address}` : `${e.place.name} - ${e?.online_locations[0]}`
+      const ret = {
+        uid: `${e.id}@${settings.hostname}`,
+        start,
+        startInputType: 'utc',
+        endInputType: 'utc',
+        title: e.title,
+        description: htmlToText(e.description),
+        htmlContent: e.description && e.description.replace(/\n/g,"<br>"),
+        location,
+        url: `${settings.baseurl}/event/${e.slug || e.id}`,
+        status: 'CONFIRMED',
+        categories: e.tags.map(t => t.tag || t),
+        alarms
+      }
+
+      if (e.place.latitude && e.place.longitude) {
+        ret.geo = { lat: e.place.latitude, lon: e.place.longitude }
+      }
+
+      if (e.end_datetime) {
+        const tmpEnd = DateTime.fromSeconds(e.end_datetime, { zone: "UTC-1" })
         const end = [ tmpEnd.year, tmpEnd.month, tmpEnd.day, tmpEnd.hour, tmpEnd.minute ]
         ret.end = end
       }

@@ -39,6 +39,14 @@ v-container.pa-0.pa-md-3
             v-text-field(v-model='link')
               v-btn(slot='prepend' text color='primary' @click='clipboard(link)') {{$t("common.copy")}}
                 v-icon.ml-1(v-text='mdiContentCopy')
+      v-tab ics/ical UK Time
+      v-tab-item
+        v-card
+          v-card-text
+            p(v-html='$t(`export.ical_description`)')
+            v-text-field(v-model='link')
+              v-btn(slot='prepend' text color='primary' @click='clipboard(link)') {{$t("common.copy")}}
+                v-icon.ml-1(v-text='mdiContentCopy')
 
       v-tab List
       v-tab-item
@@ -164,7 +172,7 @@ export default {
       
     },
     link () {
-      const typeMap = ['rss', 'ics']
+      const typeMap = ['rss', 'ics', 'icsuk']
       const params = []
 
 

@@ -18,6 +18,21 @@ li {
   background-color: #333;
 }
 
+.theme--dark.v-icon{
+  color: #000;
+}
+
+.theme--light.v-icon{
+  color: #fff;
+}
+
+.theme--light.v-btn{
+  color: #fff;
+}
+.theme--dark.v-btn{
+  color: #000;
+}
+
 .v-application {
   font-family: sans-serif;
 }
@@ -45,6 +60,10 @@ li {
 
 .theme--dark.v-sheet{
   color:#000;
+}
+
+.theme--light.v-sheet{
+  color:#fff;
 }
 
 #home {
