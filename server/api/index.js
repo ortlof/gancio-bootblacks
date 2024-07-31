@@ -183,6 +183,7 @@ module.exports = () => {
 
     // get event
     api.get('/event/detail/:event_slug.:format?', cors, eventController.get)
+    api.get('/event/detailuk/:event_slug.:format?', cors, eventController.getuk)
 
     // export events (rss/ics)
     api.get('/export/:format', cors, exportController.export)

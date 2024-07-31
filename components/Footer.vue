@@ -26,7 +26,7 @@ v-footer(aria-label='Footer')
 
   v-btn.ml-1(v-if='settings.enable_federation' color='primary' text rel='me' @click.prevent='showFollowMe=true') {{$t('event.interact_with_me')}}
   v-spacer
-  v-btn(color='primary' text href='https://gancio.org' target='_blank' rel="noopener") Gancio <small>{{settings.version}}</small>
+  v-btn(color='primary' text href='https://github.com/ortlof/gancio-bootblacks' target='_blank' rel="noopener") Made with A Gancio Fork <small>{{settings.version}}</small>
 
 </template>
 <script>

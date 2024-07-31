@@ -217,6 +217,115 @@ const eventController = {
     }
   },
 
+  async getuk(req, res) {
+    const format = req.params.format || 'json'
+    const isAdminOrEditor = req.user?.is_editor || req.user?.is_admin
+    const slug = req.params.event_slug
+
+    // retrocompatibility, old events URL does not use slug, use id as fallback
+    const id = Number(slug) || -1
+    let event
+
+    try {
+      event = await Event.findOne({
+        where: {
+          [Op.or]: {
+            slug,
+            id
+          }
+        },
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'placeId', 'ap_id', 'apUserApId']
+        },
+        include: [
+          { model: Tag, required: false, attributes: ['tag'], through: { attributes: [] } },
+          { model: Place, attributes: ['name', 'address', 'latitude', 'longitude', 'id'] },
+          { model: User, required: false, attributes: ['is_active'] },
+          {
+            model: Resource,
+            where: !isAdminOrEditor && { hidden: false },
+            include: [{ model: APUser, required: false, attributes: ['object', 'ap_id'] }],
+            required: false,
+            attributes: ['id', 'activitypub_id', 'data', 'hidden']
+          },
+          { model: Event, required: false, as: 'parent', attributes: ['id', 'recurrent', 'is_visible', 'start_datetime'] },
+        ],
+        order: [[Resource, 'id', 'DESC']],
+      })
+    } catch (e) {
+      log.error('[EVENT]', e)
+      return res.sendStatus(400)
+    }
+
+    if (!event) {
+      return res.sendStatus(404)
+    }
+
+    // get prev and next event
+    const next = await Event.findOne({
+      attributes: ['id', 'slug'],
+      where: {
+        id: { [Op.not]: event.id },
+        is_visible: true,
+        ...(!res.locals.settings.collection_in_home && ({ ap_id: null }) ),
+        recurrent: null,
+        [Op.or]: [
+          { start_datetime: { [Op.gt]: event.start_datetime } },
+          {
+            start_datetime: event.start_datetime,
+            id: { [Op.gt]: event.id }
+          }
+        ]
+      },
+      order: [['start_datetime', 'ASC'], ['id', 'ASC']]
+    })
+
+    const prev = await Event.findOne({
+      attributes: ['id', 'slug'],
+      where: {
+        is_visible: true,
+        id: { [Op.not]: event.id },
+        ...(!res.locals.settings.collection_in_home && ({ ap_id: null }) ),
+        recurrent: null,
+        [Op.or]: [
+          { start_datetime: { [Op.lt]: event.start_datetime } },
+          {
+            start_datetime: event.start_datetime,
+            id: { [Op.lt]: event.id }
+          }
+        ]
+      },
+      order: [['start_datetime', 'DESC'], ['id', 'DESC']]
+    })
+
+    if (event && (event.is_visible || isAdminOrEditor)) {
+      event = event.get()
+      event.isMine = event.userId === req.user?.id
+      event.isAnon = event.userId === null || !event?.user?.is_active
+      event.original_url = event?.ap_object?.url || event?.ap_object?.id
+      delete event.ap_object
+      delete event.user
+      delete event.userId
+      event.next = next && (next.slug || next.id)
+      event.prev = prev && (prev.slug || prev.id)
+      event.tags = event.tags.map(t => t.tag)
+      event.plain_description = htmlToText(event.description, event.description.replace('\n', '').slice(0, 1000) )
+
+      if (format === 'json') {
+        res.json(event)
+      } else if (format === 'ics') {
+        // last arg is alarms/reminder, ref: https://github.com/adamgibbons/ics#attributes (alarms)
+        exportController.icsuk(req, res, [event], [{
+          action: 'display',
+          description: event.title,
+          trigger: { hours: 1, before: true }
+        }])
+      }
+    } else {
+      res.sendStatus(404)
+    }
+  },
+
   async disableAuthor (req, res) {
     const eventId = Number(req.params.event_id)
     log.warn('[EVENT] Disable author of the event %d', eventId)

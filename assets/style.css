@@ -19,11 +19,27 @@ li {
 }
 
 .theme--dark.v-icon{
+  color: #fff;
+}
+
+.theme--dark.v-alert__icon.v-icon{
   color: #000;
 }
 
-.theme--light.v-icon{
+.theme--dark.v-alert.v-sheet{
+  color: #000;
+}
+
+.theme--light.v-alert__icon.v-icon{
   color: #fff;
+}
+
+.theme--light.v-alert.v-sheet{
+  color: #fff;
+}
+
+.theme--light.v-icon{
+  color: #000;
 }
 
 .theme--light.v-btn{
@@ -59,11 +75,11 @@ li {
 }
 
 .theme--dark.v-sheet{
-  color:#000;
+  color:#fff;
 }
 
 .theme--light.v-sheet{
-  color:#fff;
+  color:#000;
 }
 
 #home {

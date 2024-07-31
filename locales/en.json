@@ -59,6 +59,7 @@
     "copy_link": "Copy link",
     "send_via_mail": "Send e-mail",
     "add_to_calendar": "Add to calendar",
+    "add_to_calendar_uk": "Add to calendar (UK Time GMT+1)",
     "instances": "Instances",
     "copied": "Copied",
     "embed": "Embed",

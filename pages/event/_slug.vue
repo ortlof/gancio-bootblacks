@@ -54,6 +54,7 @@
                 v-list-item-content
                   v-list-item-title(v-text="$t('common.copy_link')")
 
+
               //- map
               v-list-item(v-if='settings.allow_geolocation && event.place?.latitude && event.place?.longitude' @click="mapModal = true")
                 v-list-item-icon
@@ -67,6 +68,15 @@
                   v-icon(v-text='mdiCalendarExport')
                 v-list-item-content
                   v-list-item-title(v-text="$t('common.add_to_calendar')")
+
+                  v-divider
+
+              //- calendarUK 
+              v-list-item(:href='`/api/event/detailuk/${event.slug || event.id}.ics`')
+                v-list-item-icon
+                  v-icon(v-text='mdiCalendarExport')
+                v-list-item-content
+                  v-list-item-title(v-text="$t('common.add_to_calendar')+ ' ' + '(UK Time GMT+1)'")
 
               //- Report
               v-list-item(v-if='settings.enable_moderation && settings.enable_report && !showModeration' @click='report')
